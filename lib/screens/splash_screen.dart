@@ -28,10 +28,11 @@ class _SplashScreenState extends State<SplashScreen> {
     return Scaffold(
       body: SafeArea(
         child: Center(
-          child: Image.network(
-            "https://centa.org/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Fnew-logo.8c938966.png&w=1080&q=75",
-            width: 160,
-          ),
+          child: Text('Loading..........')
+          // child: Image.network(
+          //   "https://centa.org/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Fnew-logo.8c938966.png&w=1080&q=75",
+          //   width: 160,
+          // ),
         ),
       ),
     );
@@ -44,7 +45,7 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> gotoLogin() async {
-    await Future.delayed(Duration(seconds: 3));
+    await Future.delayed( const Duration(seconds: 3));
     Navigator.of(context)
         .push(MaterialPageRoute(builder: (cntx) => LoginScreen()));
   }
