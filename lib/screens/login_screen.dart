@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:user_management/gql/model/user_model.dart';
 import 'package:user_management/gql/query/query.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -43,12 +44,11 @@ class LoginScreen extends StatelessWidget {
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'please enter your valid email';
-                           } else if(value.trim() != value){
+                          } else if (value.trim() != value) {
                             return 'can\'t add white spaces';
-                          
                           } else if (!value.contains('@')) {
                             return 'enter a proper email address';
-                          } 
+                          }
                           return null;
                         },
                       ),
@@ -69,7 +69,7 @@ class LoginScreen extends StatelessWidget {
                           return 'maximum 8 letters';
                         } else if (value.length < 4) {
                           return 'minimum 4 letters';
-                        }else{
+                        } else {
                           return null;
                         }
                       },
@@ -84,8 +84,9 @@ class LoginScreen extends StatelessWidget {
                                 MaterialStateProperty.all(Colors.white),
                             minimumSize:
                                 MaterialStateProperty.all(const Size(400, 40)),
-                            textStyle: MaterialStateProperty.all(const TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.bold)),
+                            textStyle: MaterialStateProperty.all(
+                                const TextStyle(
+                                    fontSize: 18, fontWeight: FontWeight.bold)),
                             shape: MaterialStateProperty.all(
                               RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(
@@ -111,39 +112,50 @@ class LoginScreen extends StatelessWidget {
     ));
   }
 
-  void checkLogin(BuildContext cntx)async {
+  void checkLogin(BuildContext cntx) async {
     try {
       final _email = _emailController.text;
       final _password = _passwordController.text;
-      print('call comes here');
-   await graphQLQueryServices.getAllUsers();
-      // if (_email == _password) {
-      //   print('success');
-      // } else {
-      //   //snakBar
-      //   ScaffoldMessenger.of(cntx).showSnackBar(SnackBar(
-      //     content: Text('email and password doesn\'t match'),
-      //     margin: EdgeInsets.all(10),
-      //     behavior: SnackBarBehavior.floating,
-      //     backgroundColor: Colors.red,
-      //   ));
+      // print('call comes here');
+      //  await graphQLQueryServices.getAllUsers();
+      if (_email.isNotEmpty && _password.isNotEmpty) {
+        final loginInfo = await graphQLQueryServices.findUserByEmail(
+            password: _password, email: _email);
+        if (loginInfo['status'] == true) {
+          print('login success');
+        } else {
+          ScaffoldMessenger.of(cntx).showSnackBar(const SnackBar(
+            content: Text('invalid email or password'),
+            margin: EdgeInsets.all(10),
+            behavior: SnackBarBehavior.floating,
+            backgroundColor: Colors.red,
+          ));
+        }
+      } else {
+        //snakBar
+        ScaffoldMessenger.of(cntx).showSnackBar(const SnackBar(
+          content: Text('please enter the details'),
+          margin: EdgeInsets.all(10),
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: Colors.red,
+        ));
 
-      //   //alert dialog
-      //   // showDialog(context: cntx, builder: (cntx1){
-      //   //   return AlertDialog(
-      //   //     title: Text('Error'),
-      //   //     content: Text('email and password doesn\'t match'),
-      //   //     shape: RoundedRectangleBorder( // Custom shape for the AlertDialog
-      //   //   borderRadius: BorderRadius.circular(5.0),
-      //   // ),
-      //   //     actions:[
-      //   //       TextButton(onPressed: (){
-      //   //         Navigator.of(cntx1).pop();
-      //   //       }, child: Text('Close'))
-      //   //     ]
-      //   //   );
-      //   // });
-      // }
+        //alert dialog
+        // showDialog(context: cntx, builder: (cntx1){
+        //   return AlertDialog(
+        //     title: Text('Error'),
+        //     content: Text('email and password doesn\'t match'),
+        //     shape: RoundedRectangleBorder( // Custom shape for the AlertDialog
+        //   borderRadius: BorderRadius.circular(5.0),
+        // ),
+        //     actions:[
+        //       TextButton(onPressed: (){
+        //         Navigator.of(cntx1).pop();
+        //       }, child: Text('Close'))
+        //     ]
+        //   );
+        // });
+      }
     } catch (err) {
       print('$err');
     }
