@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:user_management/gql/model/user_model.dart';
 import 'package:user_management/gql/query/query.dart';
+import 'package:user_management/screens/home_screen.dart';
 
 class LoginScreen extends StatelessWidget {
   LoginScreen({super.key});
@@ -8,6 +10,7 @@ class LoginScreen extends StatelessWidget {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  final box = GetStorage();
   GraphQLQueryServices graphQLQueryServices = GraphQLQueryServices();
   @override
   Widget build(BuildContext context) {
@@ -122,7 +125,11 @@ class LoginScreen extends StatelessWidget {
         final loginInfo = await graphQLQueryServices.findUserByEmail(
             password: _password, email: _email);
         if (loginInfo['status'] == true) {
-          print('login success');
+          await box.write('user', loginInfo);
+          Navigator.of(cntx).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (cntx) => HomeScreen()),
+            (Route<dynamic> route) => false,
+          );
         } else {
           ScaffoldMessenger.of(cntx).showSnackBar(const SnackBar(
             content: Text('invalid email or password'),

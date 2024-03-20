@@ -1,7 +1,7 @@
-
 import 'package:flutter/material.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:user_management/screens/home_screen.dart';
 import 'package:user_management/screens/login_screen.dart';
-
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -28,12 +28,10 @@ class _SplashScreenState extends State<SplashScreen> {
     return Scaffold(
       body: SafeArea(
         child: Center(
-          child: Text('Loading..........')
-          // child: Image.network(
-          //   "https://centa.org/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Fnew-logo.8c938966.png&w=1080&q=75",
-          //   width: 160,
-          // ),
-        ),
+            child: Image.asset(
+          'assets/images/centa_C_logo.png',
+          width: 100,
+        )),
       ),
     );
   }
@@ -45,8 +43,18 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> gotoLogin() async {
-    await Future.delayed( const Duration(seconds: 3));
-    Navigator.of(context)
-        .push(MaterialPageRoute(builder: (cntx) => LoginScreen()));
+    final _user = await GetStorage().read('user');
+    await Future.delayed(const Duration(seconds: 3));
+    if (_user != null && _user.isNotEmpty) {
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (cntx) => HomeScreen()),
+        (Route<dynamic> route) => false,
+      );
+    } else {
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (cntx) => LoginScreen()),
+        (Route<dynamic> route) => false,
+      );
+    }
   }
 }

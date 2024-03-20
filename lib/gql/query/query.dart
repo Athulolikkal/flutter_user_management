@@ -9,7 +9,8 @@ class GraphQLQueryServices {
   static GrphQLConfig graphQLConfig = GrphQLConfig();
   GraphQLClient client = graphQLConfig.clientToQuery();
 
-  Future<List<UserModel>> getAllUsers() async {
+//To find all users
+  Future<List<dynamic>> getAllUsers() async {
     try {
       QueryResult result = await client.query(
           QueryOptions(fetchPolicy: FetchPolicy.noCache, document: gql('''
@@ -31,10 +32,13 @@ class GraphQLQueryServices {
         if (userDetail == null || userDetail.isEmpty) {
           return [];
         } else {
-          List<UserModel> users = userDetail.map((user) {
-            return UserModel.fromMap(map: user);
-          }).toList();
-          return users;
+          // print(userDetail);
+          // List<UserModel> users = userDetail.map((user) {
+          //   return UserModel.fromMap(map: user);
+          // }).toList();
+          // return users;
+          return userDetail;
+         
         }
       }
     } catch (err) {
@@ -42,6 +46,7 @@ class GraphQLQueryServices {
     }
   }
 
+//To get a specific user
   Future<dynamic> findUserByEmail({password, required email}) async {
     try {
       if (email != null && email.isNotEmpty) {}
@@ -72,6 +77,7 @@ class GraphQLQueryServices {
                 return {
                   'status': true,
                   'name': userInfo['name'],
+                  'email': userInfo['email'],
                   'message': 'login successfull'
                 };
               } else {
