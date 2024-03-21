@@ -3,7 +3,7 @@
 import 'package:bcrypt/bcrypt.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:user_management/gql/config/grphql_config.dart';
-import 'package:user_management/gql/model/user_model.dart';
+
 
 class GraphQLQueryServices {
   static GrphQLConfig graphQLConfig = GrphQLConfig();
@@ -38,7 +38,6 @@ class GraphQLQueryServices {
           // }).toList();
           // return users;
           return userDetail;
-         
         }
       }
     } catch (err) {
@@ -62,6 +61,7 @@ class GraphQLQueryServices {
            }
           }
 ''')));
+      print('$result');
       if (result.hasException) {
         throw Exception(result.exception);
       } else {
@@ -96,6 +96,7 @@ class GraphQLQueryServices {
         }
       }
     } catch (err) {
+      print('$err');
       throw Exception(err);
     }
   }

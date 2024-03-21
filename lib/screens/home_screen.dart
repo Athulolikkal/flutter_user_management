@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:graphql_flutter/graphql_flutter.dart';
-import 'package:user_management/gql/model/user_model.dart';
+// import 'package:graphql_flutter/graphql_flutter.dart';
+// import 'package:user_management/gql/model/user_model.dart';
 import 'package:user_management/gql/query/query.dart';
 import 'package:user_management/widgets/custom_app.dart';
+import 'package:user_management/widgets/modal_adduser.dart';
 
 class HomeScreen extends StatelessWidget {
   HomeScreen({super.key});
@@ -30,20 +31,22 @@ class HomeScreen extends StatelessWidget {
                               backgroundColor: Colors.green,
                             ),
                             trailing: Row(
-                              mainAxisSize: MainAxisSize.min, 
+                              mainAxisSize: MainAxisSize.min,
                               children: [
                                 IconButton(
                                   icon: const Icon(Icons.edit,
                                       color: Colors.blue),
                                   onPressed: () {
-                                    print('edit pressed ${snapshot.data![index]['id']}');
+                                    print(
+                                        'edit pressed ${snapshot.data![index]['id']}');
                                   },
                                 ),
                                 IconButton(
                                   icon: const Icon(Icons.delete,
                                       color: Colors.red),
                                   onPressed: () {
-                                    print('delete pressed ${snapshot.data![index]['id']}');
+                                    print(
+                                        'delete pressed ${snapshot.data![index]['id']}');
                                   },
                                 ),
                               ],
@@ -51,7 +54,7 @@ class HomeScreen extends StatelessWidget {
                           );
                         },
                         separatorBuilder: (ctx, index) {
-                          return  const Divider();
+                          return const Divider();
                         },
                         itemCount: snapshot.data!.length),
                   ),
@@ -62,11 +65,25 @@ class HomeScreen extends StatelessWidget {
 
               // print(snapshot.data);
             } else if (snapshot.hasError) {
-              return Text('Unable to fetch user details');
+              return const Text('Unable to fetch user details');
             }
-            return Center(child: const CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           }),
-          floatingActionButton: FloatingActionButton(onPressed: (){print("button clicked");},child: const Icon(Icons.add),backgroundColor:Colors.blue,foregroundColor: Colors.white,),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          showModalBottomSheet(
+              context: context,
+              builder: (BuildContext innerContext) {
+                return AddUser();
+              },
+              isScrollControlled: true);
+          // print('print is happend');
+        },
+        child: const Icon(Icons.add),
+        backgroundColor: Colors.blue,
+        foregroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+      ),
     );
   }
 }

@@ -6,6 +6,7 @@ class GrphQLConfig {
       HttpLink(dotenv.get('GRAPHQL_BASE_URL'), defaultHeaders: {
     'content-type': "application/json",
     'x-hasura-admin-secret': dotenv.get('GRAPHQL_ADMIN_KEY'),
+    // 'x-hasura-admin-secret': dotenv.get('GRAPHQL_ADMIN_KEY'),
   });
 
   GraphQLClient clientToQuery() =>
