@@ -1,24 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:user_management/gql/query/mutation.dart';
-import 'package:user_management/screens/home_screen.dart';
 // import 'package:get_storage/get_storage.dart';
 
-class AddUser extends StatelessWidget {
-  AddUser({super.key});
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-  final _userNameController = TextEditingController();
-  // final _formKey = GlobalKey<FormState>();
-  GraphQLMutationServices graphQlMutationServices = GraphQLMutationServices();
+class AddUser extends StatefulWidget {
+  const AddUser({super.key});
 
   @override
-  Widget build(BuildContext innerContext) {
+  State<AddUser> createState() => _AddUserState();
+}
+
+class _AddUserState extends State<AddUser> {
+  final _emailController = TextEditingController();
+
+  final _passwordController = TextEditingController();
+
+  final _userNameController = TextEditingController();
+
+  final _formKey = GlobalKey<FormState>();
+
+  final GraphQLMutationServices graphQlMutationServices =
+      GraphQLMutationServices();
+  bool isLoading = false;
+
+  @override
+  Widget build(BuildContext context) {
     return Padding(
-      padding: MediaQuery.of(innerContext).viewInsets,
+      padding: MediaQuery.of(context).viewInsets,
       child: Container(
         padding: const EdgeInsets.all(30.0),
         child: Form(
-          // key: _formKey,
+          key: _formKey,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -79,25 +90,33 @@ class AddUser extends StatelessWidget {
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 15),
-                child: ElevatedButton.icon(
-                  style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all(Colors.blue),
-                      foregroundColor: MaterialStateProperty.all(Colors.white),
-                      minimumSize:
-                          MaterialStateProperty.all(const Size(400, 40)),
-                      textStyle: MaterialStateProperty.all(const TextStyle(
-                          fontSize: 18, fontWeight: FontWeight.bold)),
-                      shape: MaterialStateProperty.all(
-                        RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(
-                              10), // Set the border radius here
-                        ),
-                      )),
-                  onPressed: () {
-                    isUserAdd(innerContext);
-                  },
-                  icon: const Icon(Icons.person),
-                  label: const Text('Add'),
+                child: Visibility(
+                  child: ElevatedButton.icon(
+                    style: ButtonStyle(
+                        backgroundColor: MaterialStateProperty.all(Colors.blue),
+                        foregroundColor:
+                            MaterialStateProperty.all(Colors.white),
+                        minimumSize:
+                            MaterialStateProperty.all(const Size(400, 40)),
+                        textStyle: MaterialStateProperty.all(const TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold)),
+                        shape: MaterialStateProperty.all(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                                10), // Set the border radius here
+                          ),
+                        )),
+                    onPressed: () {
+                      setState(() {
+                        isLoading = true;
+                      });
+                      isUserAdd(context);
+                    },
+                    icon: const Icon(Icons.person),
+                    label: isLoading
+                        ? const CircularProgressIndicator()
+                        : const Text('Add'),
+                  ),
                 ),
               ),
             ],
@@ -118,12 +137,12 @@ class AddUser extends StatelessWidget {
         final errorMessage = Details['message'];
         ScaffoldMessenger.of(cntx).showSnackBar(SnackBar(
           content: Text(errorMessage),
-          margin:const EdgeInsets.all(10),
+          margin: const EdgeInsets.all(10),
           behavior: SnackBarBehavior.floating,
-          backgroundColor:const Color.fromARGB(255, 31, 30, 30),
-          duration:const Duration(seconds: 2),
+          backgroundColor: const Color.fromARGB(255, 31, 30, 30),
+          duration: const Duration(seconds: 2),
         ));
-        Navigator.of(cntx).pop(cntx);
+        Navigator.of(cntx).pop();
       } else {
         ScaffoldMessenger.of(cntx).showSnackBar(const SnackBar(
           content: Text("successfully added the user"),
@@ -135,9 +154,11 @@ class AddUser extends StatelessWidget {
         _emailController.clear();
         _passwordController.clear();
         _userNameController.clear();
-        Navigator.of(cntx).pushReplacement(
-          MaterialPageRoute(builder: (cntx) => HomeScreen()),
-        );
+        Navigator.of(cntx).pop(true);
+
+        // Navigator.of(cntx).pushReplacement(
+        //   MaterialPageRoute(builder: (cntx) => HomeScreen()),
+        // );
       }
     } else {
       ScaffoldMessenger.of(cntx).showSnackBar(const SnackBar(
@@ -147,7 +168,7 @@ class AddUser extends StatelessWidget {
         backgroundColor: Color.fromARGB(255, 31, 30, 30),
         duration: Duration(seconds: 2),
       ));
-      Navigator.of(cntx).pop(cntx);
+      Navigator.of(cntx).pop();
     }
   }
 }

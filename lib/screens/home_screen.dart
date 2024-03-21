@@ -5,9 +5,14 @@ import 'package:user_management/gql/query/query.dart';
 import 'package:user_management/widgets/custom_app.dart';
 import 'package:user_management/widgets/modal_adduser.dart';
 
-class HomeScreen extends StatelessWidget {
-  HomeScreen({super.key});
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
 
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
   final GraphQLQueryServices graphQLService = GraphQLQueryServices();
 
   @override
@@ -17,6 +22,9 @@ class HomeScreen extends StatelessWidget {
       body: FutureBuilder(
           future: graphQLService.getAllUsers(),
           builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
             if (snapshot.hasData) {
               if (snapshot.data!.isNotEmpty) {
                 return SafeArea(
@@ -72,17 +80,22 @@ class HomeScreen extends StatelessWidget {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           showModalBottomSheet(
-              context: context,
-              builder: (BuildContext innerContext) {
-                return AddUser();
-              },
-              isScrollControlled: true);
+                  context: context,
+                  builder: (context) {
+                    return const AddUser();
+                  },
+                  isScrollControlled: true)
+              .then((value) {
+            if (value==true) {
+              setState(() {});
+            }
+          });
           // print('print is happend');
         },
-        child: const Icon(Icons.add),
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+        child: const Icon(Icons.add),
       ),
     );
   }
