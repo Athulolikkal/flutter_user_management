@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-// import 'package:graphql_flutter/graphql_flutter.dart';
-// import 'package:user_management/gql/model/user_model.dart';
 import 'package:user_management/gql/query/query.dart';
+import 'package:user_management/screens/userInfo.dart';
 import 'package:user_management/widgets/custom_app.dart';
+import 'package:user_management/widgets/user_dialog.dart';
 import 'package:user_management/widgets/modal_adduser.dart';
+import 'package:user_management/widgets/user_edit.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -18,7 +19,9 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(),
+      appBar: const CustomAppBar(
+        name: 'CRUD',
+      ),
       body: FutureBuilder(
           future: graphQLService.getAllUsers(),
           builder: (context, snapshot) {
@@ -38,6 +41,23 @@ class _HomeScreenState extends State<HomeScreen> {
                             leading: const CircleAvatar(
                               backgroundColor: Colors.green,
                             ),
+                            onTap: () {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (cntx) => UserInfo(
+                                        userName: snapshot.data![index]['name'],
+                                        email: snapshot.data![index]['email'],
+                                      )));
+                            },
+                            onLongPress: () {
+                              AlertDialogs.deleteUser(
+                                      context,
+                                      'Delete User',
+                                      '''Are you sure do you want to delete ${snapshot.data![index]['name']}?''',
+                                      snapshot.data![index]['id'])
+                                  .then((value) => {
+                                        if (value == true) {setState(() {})}
+                                      });
+                            },
                             trailing: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
@@ -45,16 +65,35 @@ class _HomeScreenState extends State<HomeScreen> {
                                   icon: const Icon(Icons.edit,
                                       color: Colors.blue),
                                   onPressed: () {
-                                    print(
-                                        'edit pressed ${snapshot.data![index]['id']}');
+                                    showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return EditUser(
+                                            userName: snapshot.data![index]
+                                                ['name'],
+                                            email: snapshot.data![index]
+                                                ['email'],
+                                            id: snapshot.data![index]['id'],
+                                          );
+                                        }).then((value) => {
+                                          if (value == true)
+                                            {setState(() => {})}
+                                        });
                                   },
                                 ),
                                 IconButton(
                                   icon: const Icon(Icons.delete,
                                       color: Colors.red),
                                   onPressed: () {
-                                    print(
-                                        'delete pressed ${snapshot.data![index]['id']}');
+                                    AlertDialogs.deleteUser(
+                                            context,
+                                            'Delete User',
+                                            '''Are you sure do you want to delete ${snapshot.data![index]['name']}?''',
+                                            snapshot.data![index]['id'])
+                                        .then((value) => {
+                                              if (value == true)
+                                                {setState(() {})}
+                                            });
                                   },
                                 ),
                               ],
@@ -70,8 +109,6 @@ class _HomeScreenState extends State<HomeScreen> {
               } else {
                 return const SafeArea(child: Center(child: Text('No Data')));
               }
-
-              // print(snapshot.data);
             } else if (snapshot.hasError) {
               return const Text('Unable to fetch user details');
             }
@@ -86,7 +123,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   },
                   isScrollControlled: true)
               .then((value) {
-            if (value==true) {
+            if (value == true) {
               setState(() {});
             }
           });

@@ -4,14 +4,25 @@ import 'package:user_management/gql/model/user_model.dart';
 import 'package:user_management/gql/query/query.dart';
 import 'package:user_management/screens/home_screen.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   LoginScreen({super.key});
 
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
+
   final _passwordController = TextEditingController();
+
   final _formKey = GlobalKey<FormState>();
+
   final box = GetStorage();
+  bool isLoading = false;
+
   GraphQLQueryServices graphQLQueryServices = GraphQLQueryServices();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -102,7 +113,9 @@ class LoginScreen extends StatelessWidget {
                           }
                         },
                         icon: const Icon(Icons.check),
-                        label: const Text('Login'),
+                        label: isLoading
+                            ? const CircularProgressIndicator()
+                            : const Text('Login'),
                       ),
                     ),
                   ],
@@ -122,15 +135,24 @@ class LoginScreen extends StatelessWidget {
       // print('call comes here');
       //  await graphQLQueryServices.getAllUsers();
       if (_email.isNotEmpty && _password.isNotEmpty) {
+        setState(() {
+          isLoading = true;
+        });
         final loginInfo = await graphQLQueryServices.findUserByEmail(
             password: _password, email: _email);
         if (loginInfo['status'] == true) {
           await box.write('user', loginInfo);
+          setState(() {
+            isLoading = false;
+          });
           Navigator.of(cntx).pushAndRemoveUntil(
             MaterialPageRoute(builder: (cntx) => HomeScreen()),
             (Route<dynamic> route) => false,
           );
         } else {
+          setState(() {
+            isLoading = false;
+          });
           ScaffoldMessenger.of(cntx).showSnackBar(const SnackBar(
             content: Text('invalid email or password'),
             margin: EdgeInsets.all(10),

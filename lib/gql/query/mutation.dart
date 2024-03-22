@@ -39,4 +39,48 @@ class GraphQLMutationServices {
       return {"Error": true, "message": "something went wrong"};
     }
   }
+
+  Future<bool> deleteUser({required userId}) async {
+    try {
+      QueryResult result = await client.mutate(
+          MutationOptions(fetchPolicy: FetchPolicy.noCache, document: gql(
+            '''
+             mutation MyQuery {
+             delete_users(where: {id: {_eq: "$userId"}}) {
+             returning {
+             id
+              }
+            }
+           }
+          '''
+        )));
+      print(result);
+      return true;
+    } catch (err) {
+      throw Exception(err);
+    }
+  }
+
+  Future<bool> updateUser({required userId,email,name}) async {
+    try {
+      QueryResult result = await client.mutate(
+          MutationOptions(fetchPolicy: FetchPolicy.noCache, document: gql(
+            '''
+             mutation MyQuery {
+             update_users(_set: {email: "$email", name: "$name"}, where: {id: {_eq: "$userId"}}) {
+             returning {
+             id
+             email
+             name
+             }
+            }
+           }
+          '''
+        )));
+      print(result);
+      return true;
+    } catch (err) {
+      throw Exception(err);
+    }
+  }
 }

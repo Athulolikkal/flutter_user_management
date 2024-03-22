@@ -3,14 +3,15 @@ import 'package:get_storage/get_storage.dart';
 import 'package:user_management/screens/login_screen.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const CustomAppBar({super.key});
+  final String name;
+  const CustomAppBar({super.key,required this.name});
   @override
   Size get preferredSize => const Size.fromHeight(60.0);
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      title: const Text(
-        'CRUD',
+      title: Text(
+        name,
         style: TextStyle(
           color: Colors.white,
           fontWeight: FontWeight.bold,

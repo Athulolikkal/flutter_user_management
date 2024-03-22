@@ -107,10 +107,12 @@ class _AddUserState extends State<AddUser> {
                           ),
                         )),
                     onPressed: () {
-                      setState(() {
-                        isLoading = true;
-                      });
-                      isUserAdd(context);
+                      if (_formKey.currentState!.validate()) {
+                        setState(() {
+                          isLoading = true;
+                        });
+                        isUserAdd(context);
+                      }
                     },
                     icon: const Icon(Icons.person),
                     label: isLoading
